@@ -17,9 +17,14 @@ class ProductResource extends Resource
         return [
             'name' => $this->name,
             'description' => $this->detail,
-            'price' => $this->price,
-            'stock' => $this->stock,
-            'discount' => $this->discount
+            'mrp' => $this->price,
+            'stock' => $this->stock == 0 ? 'Out of Stock' : $this->stock,
+            'discount' => $this->discount,
+            'finalPrice' => bcmul($this->price, (1 - bcdiv($this->discount,100,2))),
+            'rating' => $this->reviews->count() > 0 ? bcdiv($this->reviews->sum('rating'), $this->reviews->count(), 1) : 'Not Rated Yet',
+            'href' => [
+                'reviews' => route('reviews.index', $this->id)
+            ]
         ];
     }
 }
